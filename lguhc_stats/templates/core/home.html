@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="p-4 p-md-5 mb-4 rounded bg-light">
+    <div class="col-md-8 px-0">
+      <h1 class="display-6 fw-bold">Stats Loup Garou UHC</h1>
+      <p class="lead">Enregistrez vos parties, suivez vos ratios (K/D, winrate), et comparez-vous aux autres.</p>
+      {% if user.is_authenticated %}
+        <a class="btn btn-primary btn-lg" href="{% url 'add_entry' %}">Ajouter une partie</a>
+      {% else %}
+        <a class="btn btn-primary btn-lg" href="{% url 'signup' %}">Créer un compte</a>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row text-center">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="display-5">{{ total_players }}</div>
+          <div class="text-muted">Joueurs</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="display-5">{{ total_entries }}</div>
+          <div class="text-muted">Parties enregistrées</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="display-5">{{ total_kills }}</div>
+          <div class="text-muted">Kills totaux</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mt-4  text-white">Dernières parties</h3>
+  <div class="list-group">
+    {% for e in recent_entries %}
+      <a class="list-group-item list-group-item-action" href="{% url 'profile' e.user.username %}">
+        <strong>{{ e.user.username }}</strong> — {{ e.played_at|date:"d/m/Y H:i" }} — {{ e.role }} — Kills: {{ e.kills }} — {% if e.won %}<span class="text-success">Victoire</span>{% else %}<span class="text-danger">Défaite</span>{% endif %}
+      </a>
+    {% empty %}
+      <div class="text-muted">Aucune partie enregistrée pour l'instant.</div>
+    {% endfor %}
+  </div>
+{% endblock %}

@@ -1,0 +1,80 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Environnements virtuels ---
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.python-version
+
+# --- Django / données locales ---
+*.log
+db.sqlite3
+*.sqlite3
+*.sqlite3-journal
+
+# Uploads (ne pas versionner les médias utilisateurs)
+media/
+
+# Fichiers statiques compilés (collectstatic)
+staticfiles/
+
+# Fichiers d'environnement / secrets
+.env
+.env.*
+!.env.example
+
+# Paramètres locaux possibles
+settings_local.py
+*.local.settings.py
+
+# --- Build / packaging ---
+build/
+dist/
+downloads/
+.eggs/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+pip-log.txt
+
+# --- Tests / couverture ---
+.coverage
+*.cover
+coverage.xml
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# --- Typage / linters ---
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.ruff_cache/
+
+# --- IDE / éditeurs ---
+.vscode/
+.idea/
+*.code-workspace
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- Node (si tu ajoutes un frontend plus tard) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Divers ---
+gunicorn.pid

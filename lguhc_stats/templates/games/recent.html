@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2 class="text-white">Parties récentes</h2>
+  <div class="list-group mt-3 text-white">
+  {% for e in entries %}
+    <div class="list-group-item text-white">
+      <strong><a href="{% url 'profile' e.user.username %}">{{ e.user.username }}</a></strong>
+      — {{ e.played_at|date:"d/m/Y H:i" }} — {{ e.role }} — Kills: {{ e.kills }}
+      — {% if e.won %}<span class="text-success">Victoire</span>{% else %}<span class="text-danger">Défaite</span>{% endif %}
+    </div>
+  {% empty %}
+    <div class="text-muted">Aucune partie.</div>
+  {% endfor %}
+  </div>
+{% endblock %}

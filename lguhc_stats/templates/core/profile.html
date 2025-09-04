@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center">
+    <h2 class="text-white">Profil de {{ profile_user.username }}</h2>
+    {% if user.username == profile_user.username %}
+      <a class="btn btn-outline-primary" href="{% url 'add_entry' %}">Ajouter une partie</a>
+    {% endif %}
+  </div>
+
+  <div class="row g-3 mt-2">
+    <div class="col-md-3">
+      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ games }}</div><div class="text-muted">Parties</div></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ wins }}</div><div class="text-muted">Victoires</div></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ kills }}</div><div class="text-muted">Kills</div></div></div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ kd }}</div><div class="text-muted">K/D</div></div></div>
+    </div>
+  </div>
+
+  <div class="row g-3 mt-2">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ winrate }}%</div>
+          <div class="text-muted">Winrate</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5>Répartition des rôles</h5>
+          <ul class="mb-2">
+            {% for r in role_counts %}
+              <li>{{ r.role }} — {{ r.c }}</li>
+            {% empty %}<li>—</li>{% endfor %}
+          </ul>
+          <h5>Répartition des camps</h5>
+          <ul>
+            {% for c in camp_counts %}
+              <li>{{ c.camp }} — {{ c.c }}</li>
+            {% empty %}<li>—</li>{% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mt-4 text-white">Dernières parties</h3>
+  <table class="table table-dark table-striped">
+    <thead><tr><th>Date</th><th>Rôle</th><th>Camp</th><th>Kills</th><th>Résultat</th><th>Joueurs tués</th><th>Preuve</th><th>Statut</th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+      <tr>
+        <td>{{ e.played_at|date:"d/m/Y H:i" }}</td>
+        <td>{{ e.role }}</td>
+        <td>{{ e.camp }}</td>
+        <td>{{ e.kills }}</td>
+        <td>{% if e.won %}<span class="badge bg-success">Victoire</span>{% else %}<span class="badge bg-danger">Défaite</span>{% endif %}</td>
+        <td>{{ e.killed_players }}</td>
+        <td class="text-center">
+          {% if e.proof_image %}
+            <a href="{{ e.proof_image.url }}" target="_blank" title="Voir la preuve">
+              <img src="{{ e.proof_image.url }}" alt="Preuve" style="height:36px;border:1px solid #374151;border-radius:4px"/>
+            </a>
+          {% else %}
+            <span class="text-muted">—</span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          {% if e.verification_status == "approved" %}
+            <span class="status-icon text-success" title="Approuvée">✔️</span>
+          {% elif e.verification_status == "rejected" %}
+            <span class="status-icon text-danger" title="Refusée">❌</span>
+          {% else %}
+            <span class="status-icon text-warning" title="En attente">⏳</span>
+          {% endif %}
+        </td>        
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-muted">Aucune partie enregistrée.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

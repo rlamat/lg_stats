@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2 class="text-white">Classements</h2>
+  <div class="row mt-3 g-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">Top K/D</div>
+        <div class="card-body">
+          <ol class="mb-0">
+            {% for r in top_kd %}
+              <li><a href="{% url 'profile' r.user.username %}">{{ r.user.username }}</a> — K/D {{ r.kd }}</li>
+            {% empty %}<li>—</li>{% endfor %}
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">Top Kills</div>
+        <div class="card-body">
+          <ol class="mb-0">
+            {% for r in top_kills %}
+              <li><a href="{% url 'profile' r.user.username %}">{{ r.user.username }}</a> — {{ r.kills }} kills</li>
+            {% empty %}<li>—</li>{% endfor %}
+          </ol>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header">Top Winrate</div>
+        <div class="card-body">
+          <ol class="mb-0">
+            {% for r in top_winrate %}
+              <li><a href="{% url 'profile' r.user.username %}">{{ r.user.username }}</a> — {{ r.winrate }}% ({{ r.games }} parties)</li>
+            {% empty %}<li>—</li>{% endfor %}
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

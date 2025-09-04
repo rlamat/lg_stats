@@ -1,0 +1,40 @@
+body { background: #0b0d10; }
+.navbar, .card, .list-group-item, .table, .alert, .btn { border-radius: 0.75rem; }
+.card, .list-group-item, .table, .alert { background: #151a21; color: #e5e7eb; }
+.navbar { background: #111827 !important; }
+a, .nav-link, .navbar-brand { color: #e5e7eb !important; }
+.bg-light { background: #1f2937 !important; color: #e5e7eb; }
+.btn-primary { background: #2563eb; border-color: #2563eb; }
+.btn-outline-primary { color: #93c5fd !important; border-color: #93c5fd; }
+.table-striped>tbody>tr:nth-of-type(odd)>* { background: #111827; }
+.text-muted { color: #9ca3af !important; }
+.badge { font-size: .85rem; }
+
+.avatar-square {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    image-rendering: pixelated;   /* rendu net pour le pixel art */
+    border: 1px solid #374151;    /* petite bordure discrète */
+    background: #0b0d10;          /* évite le flash blanc au chargement */
+  }
+
+  .navbar-logo {
+    height: clamp(40px, 5vw, 64px);  /* mini 40, maxi 64, varie avec la largeur */
+    width: auto;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  
+.footer-banner {
+  background: #111827;   /* même ton que la navbar */
+  color: #9ca3af;        /* gris clair */
+  border-top: 1px solid #1f2937;
+  z-index: 1030;         /* au-dessus du contenu */
+}
+
+.status-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  display: inline-block;
+}
