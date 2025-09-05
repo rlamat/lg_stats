@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Max
 from .forms import GameEntryForm
 from .models import GameEntry
 from django.http import HttpResponseForbidden
