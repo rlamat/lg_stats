@@ -116,7 +116,7 @@ class GameEntry(models.Model):
         null=True, blank=True,
         validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
-    winning_camp = models.CharField(max_length=16, choices=Camp.choices, null=True, blank=True)
+    winning_camp = models.CharField(max_length=16, choices=Camp.choices, null=True, blank=True, verbose_name="Camp gagnant")
     verification_status = models.CharField(max_length=16, choices=VerificationStatus.choices, default=VerificationStatus.PENDING)
     verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_entries')
     verified_at = models.DateTimeField(null=True, blank=True)
@@ -137,3 +137,13 @@ class GameEntry(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.played_at:%Y-%m-%d} ({self.role})"
+
+    def clean(self):
+        # Si won=True, on force winning_camp à camp (et on empêche toute divergence)
+        if self.won:
+            self.winning_camp = self.camp
+
+    def save(self, *args, **kwargs):
+        # Garantit que clean() s’exécute même si on sauvegarde ailleurs que via un ModelForm
+        self.full_clean()
+        return super().save(*args, **kwargs)

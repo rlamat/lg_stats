@@ -75,20 +75,50 @@ def leaderboards(request):
 def global_stats(request):
     qs = GameEntry.objects.all()
     total_games = qs.count()
+
+    # --- Winrate par rôle (inchangé, à ta convenance) ---
     role_stats = []
     from .models import Role, Camp
     for key, label in Role.choices:
         rq = qs.filter(role=key)
         c = rq.count()
+        # Si tu veux aussi baser le winrate rôle sur le camp gagnant,
+        # il faut connaître le camp du rôle : ici on garde la version simple.
         w = rq.filter(won=True).count()
-        role_stats.append({"role": label, "count": c, "wins": w, "winrate": round((w/c*100.0) if c else 0.0, 2)})
+        role_stats.append({
+            "role": label,
+            "count": c,
+            "wins": w,
+            "winrate": round((w/c*100.0) if c else 0.0, 2),
+        })
+
+    # --- Winrate par camp basé sur "winning_camp" ---
+    # Denominateur : seulement les parties où un camp gagnant a été précisé
+    total_labeled = qs.filter(winning_camp__isnull=False).count()
+
     camp_stats = []
     for key, label in Camp.choices:
-        cq = qs.filter(camp=key)
-        c = cq.count()
-        w = cq.filter(won=True).count()
-        camp_stats.append({"camp": label, "count": c, "wins": w, "winrate": round((w/c*100.0) if c else 0.0, 2)})
-    return render(request, "games/stats.html", {"total_games": total_games, "role_stats": role_stats, "camp_stats": camp_stats})
+        # occurrences = fois où les joueurs ont sélectionné ce camp comme "leur camp"
+        occurrences = qs.filter(camp=key).count()
+
+        # wins = fois où ce camp a été déclaré "camp gagnant"
+        wins = qs.filter(winning_camp=key).count()
+
+        # winrate = part des victoires de ce camp sur l'ensemble des parties étiquetées
+        winrate = round((wins / total_labeled * 100.0), 2) if total_labeled else 0.0
+
+        camp_stats.append({
+            "camp": label,
+            "count": occurrences,
+            "wins": wins,
+            "winrate": winrate,
+        })
+
+    return render(request, "games/stats.html", {
+        "total_games": total_games,
+        "role_stats": role_stats,
+        "camp_stats": camp_stats,
+    })
 
 @login_required
 def edit_entry(request, pk):

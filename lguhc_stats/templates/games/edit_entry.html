@@ -7,4 +7,31 @@
     <button class="btn btn-primary" type="submit">Enregistrer</button>
     <a class="btn btn-secondary" href="javascript:history.back()">Annuler</a>
   </form>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const won = document.getElementById('id_won');
+      const camp = document.getElementById('id_camp');
+      const winCamp = document.getElementById('id_winning_camp');
+    
+      function syncWinningCamp() {
+        if (!won || !camp || !winCamp) return;
+        if (won.checked) {
+          winCamp.value = camp.value;
+          winCamp.setAttribute('disabled', 'disabled');
+          winCamp.title = "Dérivé automatiquement de votre camp (partie gagnée).";
+        } else {
+          winCamp.removeAttribute('disabled');
+          winCamp.title = "";
+        }
+      }
+    
+      if (won) {
+        won.addEventListener('change', syncWinningCamp);
+      }
+      if (camp) {
+        camp.addEventListener('change', syncWinningCamp);
+      }
+      syncWinningCamp();
+    });
+    </script>    
 {% endblock %}
