@@ -8,10 +8,11 @@ from django.core.exceptions import ValidationError
 class GameEntryForm(forms.ModelForm):
     class Meta:
         model = GameEntry
-        fields = ["played_at", "role", "camp", "kills", "won", "killed_players", "notes", "proof_image"]
+        fields = ["played_at", "role", "camp", "kills", "won", "killed_players", "notes", "proof_image", "infected", "rating", "winning_camp"]
         widgets = {
             "played_at": forms.DateTimeInput(attrs={"type":"datetime-local"}),
             "notes": forms.Textarea(attrs={"rows":3}),
+            'rating': forms.NumberInput(attrs={'min': 0, 'max': 10, 'step': 1}),
         }
         labels = {
             "played_at": "Date & heure",
@@ -20,7 +21,7 @@ class GameEntryForm(forms.ModelForm):
             "kills": "Nombre de kills",
             "won": "Victoire ?",
             "killed_players": "Joueurs tués (pseudos)",
-            "notes": "Notes",
+            "notes": "Commentaire",
         }
         
     def __init__(self, *args, **kwargs):

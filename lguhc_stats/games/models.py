@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
-
 
 class VerificationStatus(models.TextChoices):
     PENDING = "pending", _("En attente")
@@ -111,6 +111,15 @@ class GameEntry(models.Model):
     won = models.BooleanField(default=False)
     killed_players = models.TextField(blank=True, help_text="Optionnel: pseudos tués, séparés par des virgules")
     notes = models.TextField(blank=True)
+    infected = models.BooleanField(default=False)
+    rating = models.PositiveSmallIntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    winning_camp = models.CharField(max_length=16, choices=Camp.choices, null=True, blank=True)
+    verification_status = models.CharField(max_length=16, choices=VerificationStatus.choices, default=VerificationStatus.PENDING)
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_entries')
+    verified_at = models.DateTimeField(null=True, blank=True)
     proof_image = models.ImageField(upload_to='proofs/%Y/%m/%d/', blank=True, null=True)
     verification_status = models.CharField(
         max_length=16,

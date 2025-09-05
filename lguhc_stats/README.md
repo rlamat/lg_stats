@@ -15,7 +15,7 @@ Un site Django pour enregistrer et afficher les statistiques des joueurs sur le 
 ```bash
 python -m venv .venv
 .venv\\Scripts\\activate
-pip install -r requirements.txt --proxy http://proxy.bruyeres.cea.fr:3128 djangorestframework-simplejwt
+cd djangorestframework-simplejwt
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py collectstatic --noinput  # optionnel

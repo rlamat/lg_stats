@@ -23,7 +23,8 @@
             <li class="nav-item"><a class="nav-link" href="{% url 'add_entry' %}">Ajouter une partie</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'recent_entries' %}">Récents</a></li>
             <li class="nav-item"><a class="nav-link" href="{% url 'leaderboards' %}">Classements</a></li>
-          </ul>
+            <li class="nav-item"><a class="nav-link" href="{% url 'global_stats' %}">Stats</a></li>
+    </ul>
           <ul class="navbar-nav ms-auto">
             {% if user.is_authenticated %}
               <li class="nav-item d-flex align-items-center ms-2">
@@ -46,13 +47,13 @@
               <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Connexion</a></li>
               <li class="nav-item"><a class="btn btn-primary ms-2" href="{% url 'signup' %}">Inscription</a></li>
             {% endif %}
-          </ul>
+    </ul>
         </div>
       </div>
     </nav>
 
-    <footer class="footer-banner fixed-bottom text-center py-2">
-      Développé par <strong>S_Agressive</strong>
+    <footer class="bg-dark text-center text-muted py-3">
+      Site développé par S_Agressive
     </footer>    
 
     <main class="container my-4">

@@ -7,21 +7,60 @@
     {% endif %}
   </div>
 
+  <!-- Cartes récap -->
   <div class="row g-3 mt-2">
     <div class="col-md-3">
-      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ games }}</div><div class="text-muted">Parties</div></div></div>
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ games }}</div>
+          <div class="text-muted">Parties</div>
+        </div>
+      </div>
     </div>
     <div class="col-md-3">
-      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ wins }}</div><div class="text-muted">Victoires</div></div></div>
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ wins }}</div>
+          <div class="text-muted">Victoires</div>
+        </div>
+      </div>
     </div>
     <div class="col-md-3">
-      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ kills }}</div><div class="text-muted">Kills</div></div></div>
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ kills }}</div>
+          <div class="text-muted">Kills</div>
+        </div>
+      </div>
     </div>
     <div class="col-md-3">
-      <div class="card shadow-sm"><div class="card-body text-center"><div class="h1 mb-0">{{ kd }}</div><div class="text-muted">K/D</div></div></div>
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ kd }}</div>
+          <div class="text-muted">K/D</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ record_kills }}</div>
+          <div class="text-muted">Record de kills</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="h1 mb-0">{{ infected_count }}</div>
+          <div class="text-muted">Infections</div>
+          <div class="small text-muted">{{ infected_rate }}%</div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Winrate + répartitions -->
   <div class="row g-3 mt-2">
     <div class="col-md-6">
       <div class="card shadow-sm">
@@ -31,15 +70,36 @@
         </div>
       </div>
     </div>
+
     <div class="col-md-6">
       <div class="card shadow-sm">
         <div class="card-body">
           <h5>Répartition des rôles</h5>
-          <ul class="mb-2">
+          <table class="table table-striped table-hover mb-2">
+            <thead>
+              <tr><th>Rôle</th><th>Nb</th><th>%</th><th>Winrate</th></tr>
+            </thead>
+            <tbody>
+              {% for r in role_details %}
+                <tr>
+                  <td>{{ r.role }}</td>
+                  <td>{{ r.count }}</td>
+                  <td>{{ r.freq }}%</td>
+                  <td>{{ r.winrate }}%</td>
+                </tr>
+              {% empty %}
+                <tr><td colspan="4" class="text-muted">—</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% comment %} ancienne liste cachée {% endcomment %}
+          <ul class="mb-2" style="display:none">
             {% for r in role_counts %}
               <li>{{ r.role }} — {{ r.c }}</li>
             {% empty %}<li>—</li>{% endfor %}
           </ul>
+
           <h5>Répartition des camps</h5>
           <ul>
             {% for c in camp_counts %}
@@ -51,39 +111,90 @@
     </div>
   </div>
 
+  <!-- Tableau des parties -->
   <h3 class="mt-4 text-white">Dernières parties</h3>
-  <table class="table table-dark table-striped">
-    <thead><tr><th>Date</th><th>Rôle</th><th>Camp</th><th>Kills</th><th>Résultat</th><th>Joueurs tués</th><th>Preuve</th><th>Statut</th></tr></thead>
+  <table class="table table-dark table-striped table-hover">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Rôle</th>
+        <th>Camp</th>
+        <th>Kills</th>
+        <th>Résultat</th>
+        <th>Joueurs tués</th>
+        <th>Infection</th>
+        <th>Note</th>
+        <th>Commentaires</th>
+        <th>Preuve</th>
+        <th>Statut</th>
+        <th></th> <!-- colonne action (Modifier) -->
+      </tr>
+    </thead>
     <tbody>
       {% for e in entries %}
-      <tr>
-        <td>{{ e.played_at|date:"d/m/Y H:i" }}</td>
-        <td>{{ e.role }}</td>
-        <td>{{ e.camp }}</td>
-        <td>{{ e.kills }}</td>
-        <td>{% if e.won %}<span class="badge bg-success">Victoire</span>{% else %}<span class="badge bg-danger">Défaite</span>{% endif %}</td>
-        <td>{{ e.killed_players }}</td>
-        <td class="text-center">
-          {% if e.proof_image %}
-            <a href="{{ e.proof_image.url }}" target="_blank" title="Voir la preuve">
-              <img src="{{ e.proof_image.url }}" alt="Preuve" style="height:36px;border:1px solid #374151;border-radius:4px"/>
-            </a>
+        <tr>
+          <td class="text-white">{{ e.played_at|date:"d/m/Y H:i" }}</td>
+          <td class="text-white">{{ e.role }}</td>
+          <td class="text-white">{{ e.camp }}</td>
+          <td class="text-white">{{ e.kills }}</td>
+          <td>
+            {% if e.won %}
+              <span class="badge bg-success">Victoire</span>
+            {% else %}
+              <span class="badge bg-danger">Défaite</span>
+            {% endif %}
+          </td>
+          <td class="text-white">{{ e.killed_players }}</td>
+
+          <!-- Infection (✓/✗) -->
+          <td class="text-center">
+            {% if e.infected %}✔️{% else %}✖️{% endif %}
+          </td>
+
+          <!-- Note (/10) -->
+          <td class="text-center">
+            {% if e.rating is not None %}{{ e.rating }}/10{% else %}—{% endif %}
+          </td>
+
+          <!-- Commentaires (notes libres) -->
+          <td style="max-width:240px" class="text-truncate text-white" title="{{ e.notes|default_if_none:'' }}">
+            {{ e.notes|default:"—" }}
+          </td>
+
+          <!-- Preuve (image cliquable) -->
+          <td class="text-center">
+            {% if e.proof_image %}
+              <a href="{{ e.proof_image.url }}" target="_blank" rel="noopener" title="Voir la preuve">
+                <img src="{{ e.proof_image.url }}" alt="Preuve" style="height:36px;border:1px solid #374151;border-radius:4px"/>
+              </a>
+            {% else %}
+              <span class="text-muted">—</span>
+            {% endif %}
+          </td>
+
+          <!-- Statut -->
+          <td class="text-center">
+            {% if e.verification_status == "approved" %}
+              <span class="status-icon text-success" title="Approuvée">✔️</span>
+            {% elif e.verification_status == "rejected" %}
+              <span class="status-icon text-danger" title="Refusée">❌</span>
+            {% else %}
+              <span class="status-icon text-warning" title="En attente">⏳</span>
+            {% endif %}
+          </td>
+
+          <!-- Action (Modifier) -->
+          {% if user == profile_user %}
+            <td><a class="btn btn-sm btn-outline-primary" href="{% url 'edit_entry' e.pk %}">Modifier</a></td>
           {% else %}
-            <span class="text-muted">—</span>
+            <td></td>
           {% endif %}
-        </td>
-        <td class="text-center">
-          {% if e.verification_status == "approved" %}
-            <span class="status-icon text-success" title="Approuvée">✔️</span>
-          {% elif e.verification_status == "rejected" %}
-            <span class="status-icon text-danger" title="Refusée">❌</span>
-          {% else %}
-            <span class="status-icon text-warning" title="En attente">⏳</span>
-          {% endif %}
-        </td>        
-      </tr>
+        </tr>
       {% empty %}
-      <tr><td colspan="6" class="text-muted">Aucune partie enregistrée.</td></tr>
+        <tr>
+          <!-- 12 colonnes y compris l'action -->
+          <td colspan="12" class="text-muted">Aucune partie enregistrée.</td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>

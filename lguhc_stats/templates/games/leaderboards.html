@@ -2,7 +2,7 @@
 {% block content %}
   <h2 class="text-white">Classements</h2>
   <div class="row mt-3 g-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card shadow-sm">
         <div class="card-header">Top K/D</div>
         <div class="card-body">
@@ -14,7 +14,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card shadow-sm">
         <div class="card-header">Top Kills</div>
         <div class="card-body">
@@ -26,7 +26,7 @@
         </div>
       </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-3">
       <div class="card shadow-sm">
         <div class="card-header">Top Winrate</div>
         <div class="card-body">
@@ -37,6 +37,23 @@
           </ol>
         </div>
       </div>
+    
+  </div>
+  <div class="col-md-3">
+    <div class="card shadow-sm">
+      <div class="card-header">Top Record Kills</div>
+      <div class="card-body">
+        <ol class="mb-0">
+          {% for r in top_records %}
+            <li><a href="{% url 'profile' r.user.username %}">{{ r.user.username }}</a> — {{ r.record }} kills</li>
+          {% empty %}<li>—</li>{% endfor %}
+        </ol>
+        {% if me_rows.records %}
+          <div class="mt-2 pt-2 border-top small">Ton classement : #{{ me_rows.records.rank }} — {{ me_rows.records.record }} kills</div>
+        {% endif %}
+      </div>
     </div>
   </div>
+</div>
 {% endblock %}
+

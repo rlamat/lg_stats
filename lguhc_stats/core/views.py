@@ -4,7 +4,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from .forms import SignUpForm
 from games.models import GameEntry
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Max
+from games.models import GameEntry, Role, Camp
 
 def home(request):
     # Simple dashboard / landing with some aggregate stats
@@ -34,29 +35,64 @@ def signup(request):
 
 @login_required
 def profile(request, username):
-    user = get_object_or_404(User, username=username)
-    entries = GameEntry.objects.filter(user=user).order_by("-played_at")
+    profile_user = get_object_or_404(User, username=username)
+    # Les parties du joueur, plus récentes en premier
+    entries = GameEntry.objects.filter(user=profile_user).order_by('-played_at')
+
+    # Cartes récap
     games = entries.count()
     wins = entries.filter(won=True).count()
-    deaths = games - wins  # hypothèse: mort = partie non gagnée
-    kills = entries.aggregate(s=Sum("kills"))["s"] or 0
+    kills = entries.aggregate(s=Sum('kills'))['s'] or 0
+    losses = max(0, games - wins)
+    kd = round(kills / (losses or 1), 2)
+    winrate = round((wins / games * 100.0), 2) if games else 0.0
 
-    kd = kills / deaths if deaths > 0 else kills  # eviter division par zéro
-    winrate = (wins / games)*100 if games > 0 else 0
+    # Comptages simples (comme tu les utilisais déjà)
+    role_counts = entries.values('role').annotate(c=Count('id')).order_by('-c')
+    camp_counts = entries.values('camp').annotate(c=Count('id')).order_by('-c')
 
-    # Rôle et camp (team) distributions
-    role_counts = entries.values("role").annotate(c=Count("id")).order_by("-c")
-    camp_counts = entries.values("camp").annotate(c=Count("id")).order_by("-c")
+    # ➜ Record de kills
+    record_kills = entries.aggregate(m=Max('kills'))['m'] or 0
+
+    # ➜ Détail des rôles : nb, % apparition, % winrate
+    role_wins = entries.filter(won=True).values('role').annotate(w=Count('id'))
+    win_map = {r['role']: r['w'] for r in role_wins}
+
+    role_details = []
+    for rc in role_counts:
+        role_key = rc['role']
+        c = rc['c']
+        w = win_map.get(role_key, 0)
+        freq = round((c / games * 100.0), 2) if games else 0.0
+        wr = round((w / c * 100.0), 2) if c else 0.0
+        # Affiche le libellé humain si défini dans TextChoices
+        role_label = dict(Role.choices).get(role_key, role_key)
+        role_details.append({
+            'role': role_label,
+            'count': c,
+            'freq': freq,
+            'winrate': wr,
+        })
+        
+    # Stats infection
+    infected_count = entries.filter(infected=True).count()
+    infected_rate = round((infected_count / games * 100.0), 2) if games else 0.0
 
     return render(request, "core/profile.html", {
-        "profile_user": user,
-        "entries": entries[:20],
-        "games": games,
-        "wins": wins,
-        "deaths": deaths,
-        "kills": kills,
-        "kd": round(kd, 2),
-        "winrate": round(winrate, 2),
+        "profile_user": profile_user,
+        "entries": entries,
+
+        # cartes récap
+        "games": games, "wins": wins, "kills": kills, "kd": kd, "winrate": winrate,
+
+        # anciens blocs
         "role_counts": role_counts,
         "camp_counts": camp_counts,
+
+        # ➜ nouveaux pour ton template
+        "record_kills": record_kills,
+        "role_details": role_details,
+        
+        "infected_count": infected_count,
+        "infected_rate": infected_rate,
     })
