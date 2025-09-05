@@ -26,11 +26,17 @@ def recent(request):
     return render(request, "games/recent.html", {"entries": entries})
 
 def leaderboards(request):
-    from django.db.models import Sum, Count, Max
+    # Utilise uniquement les parties validées si le champ existe,
+    # sinon retombe sur toutes les parties (compatibilité).
+    if any(f.name == "verification_status" for f in GameEntry._meta.get_fields()):
+        base_qs = GameEntry.objects.filter(verification_status="approved")
+    else:
+        base_qs = GameEntry.objects.all()
+
     users = User.objects.all()
     boards = []
     for u in users:
-        qs = GameEntry.objects.filter(user=u)
+        qs = base_qs.filter(user=u)
         games = qs.count()
         wins = qs.filter(won=True).count()
         kills = qs.aggregate(s=Sum("kills"))["s"] or 0
@@ -39,8 +45,14 @@ def leaderboards(request):
         winrate = (wins / games * 100.0) if games else 0.0
         record = qs.aggregate(m=Max("kills"))["m"] or 0
         boards.append({
-            "user": u, "games": games, "wins": wins, "kills": kills,
-            "losses": losses, "kd": round(kd,2), "winrate": round(winrate,2), "record": record
+            "user": u,
+            "games": games,
+            "wins": wins,
+            "kills": kills,
+            "losses": losses,
+            "kd": round(kd, 2),
+            "winrate": round(winrate, 2),
+            "record": record,
         })
 
     def with_ranks(lst):
@@ -49,16 +61,22 @@ def leaderboards(request):
             d = dict(item); d["rank"] = i; out.append(d)
         return out
 
-    rk_kd = with_ranks(sorted(boards, key=lambda x: (x["kd"], x["kills"], x["games"]), reverse=True))
-    rk_kills = with_ranks(sorted(boards, key=lambda x: x["kills"], reverse=True))
+    rk_kd      = with_ranks(sorted(boards, key=lambda x: (x["kd"], x["kills"], x["games"]), reverse=True))
+    rk_kills   = with_ranks(sorted(boards, key=lambda x: x["kills"], reverse=True))
     rk_winrate = with_ranks(sorted(boards, key=lambda x: (x["winrate"], x["games"]), reverse=True))
     rk_records = with_ranks(sorted(boards, key=lambda x: x["record"], reverse=True))
 
     top_kd, top_kills, top_winrate, top_records = rk_kd[:10], rk_kills[:10], rk_winrate[:10], rk_records[:10]
 
+    # Affiche la ligne du joueur connecté si hors top 10
     me_rows = {}
     if request.user.is_authenticated:
-        for name, full, top in [("kd", rk_kd, top_kd), ("kills", rk_kills, top_kills), ("winrate", rk_winrate, top_winrate), ("records", rk_records, top_records)]:
+        for name, full, top in [
+            ("kd", rk_kd, top_kd),
+            ("kills", rk_kills, top_kills),
+            ("winrate", rk_winrate, top_winrate),
+            ("records", rk_records, top_records),
+        ]:
             mine = next((r for r in full if r["user"] == request.user), None)
             if mine and all(r["user"] != request.user for r in top):
                 me_rows[name] = mine
@@ -69,6 +87,7 @@ def leaderboards(request):
         "top_winrate": top_winrate,
         "top_records": top_records,
         "me_rows": me_rows,
+        "leaderboards_only_approved": True,  # pour afficher un badge dans le template
     })
 
 
