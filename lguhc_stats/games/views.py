@@ -23,27 +23,24 @@ def add_entry(request):
     return render(request, "games/add_entry.html", {"form": form})
 
 def recent(request):
-    # Récupère les parties les plus récentes (optimisé pour éviter N+1)
     qs = (GameEntry.objects
           .select_related("user")
           .order_by("-played_at"))
 
-    # 💡 Si tu veux ne montrer que les parties validées, décommente la ligne suivante :
+    # Si tu veux ne compter que les parties validées pour "Récent" :
     # qs = qs.filter(verification_status="approved")
 
-    paginator = Paginator(qs, 12)  # 12 cartes par page
-    page = request.GET.get("page", 1)
+    paginator = Paginator(qs, 12)  # 12 par page
+    page_number = request.GET.get("page") or 1
     try:
-        entries = paginator.page(page)
-    except PageNotAnInteger:
-        entries = paginator.page(1)
-    except EmptyPage:
-        entries = paginator.page(paginator.num_pages)
+        page_obj = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage):
+        page_obj = paginator.page(1)
 
     return render(request, "games/recent.html", {
-        "entries": entries,          # objet Page
-        "page_obj": entries,         # alias Django conventionnel
-        "is_paginated": entries.has_other_pages(),
+        "entries": page_obj,                # itérable (Page)
+        "page_obj": page_obj,               # conventions Django
+        "is_paginated": page_obj.has_other_pages(),
     })
 
 @login_required
