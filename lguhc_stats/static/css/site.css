@@ -114,11 +114,16 @@ a, .nav-link, .navbar-brand { color: #e5e7eb !important; }
   font-size:.85rem;
   line-height:1;
 }
-.badge-role { background:#1f2937; color:#e5e7eb; }
-.badge-camp-village { background:#14532d; color:#dcfce7; }
-.badge-camp-loup    { background:#4c0519; color:#ffe4e6; }
-.badge-camp-solo    { background:#ff9100; color:#ffffff; }
-.badge-camp-couple  { background:#ff00d4; color:#ffffff; }
+/* === Badges par camp === */
+.badge-camp-village { background:#14532d; color:#dcfce7; }   /* vert */
+.badge-camp-loup    { background:#4c0519; color:#ffe4e6; }   /* rouge */
+.badge-camp-solo,
+.badge-camp-neutral { background:#7c2d12; color:#ffedd5; }   /* orange (solo & neutre) */
+.badge-camp-couple  { background:#9d174d; color:#fce7f3; }   /* rose */
+
+/* === Badge Infecté === */
+.badge-infected     { background:#7f1d1d; color:#fee2e2; }   /* rouge */
+
 .badge-plain        { background:#4c0519; color:#e5e7eb; }
 
 /* Cartes + badges : prévenir le débordement */
