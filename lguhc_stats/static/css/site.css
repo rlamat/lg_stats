@@ -117,8 +117,9 @@ a, .nav-link, .navbar-brand { color: #e5e7eb !important; }
 .badge-role { background:#1f2937; color:#e5e7eb; }
 .badge-camp-village { background:#14532d; color:#dcfce7; }
 .badge-camp-loup    { background:#4c0519; color:#ffe4e6; }
-.badge-camp-solo    { background:#1e293b; color:#c7d2fe; }
-.badge-plain        { background:#334155; color:#e5e7eb; }
+.badge-camp-solo    { background:#ff9100; color:#ffffff; }
+.badge-camp-couple  { background:#ff00d4; color:#ffffff; }
+.badge-plain        { background:#4c0519; color:#e5e7eb; }
 
 /* Cartes + badges : prévenir le débordement */
 .recent-card .card-body,

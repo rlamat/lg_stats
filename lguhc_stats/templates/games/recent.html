@@ -24,8 +24,10 @@
                 <span class="badge-camp badge-camp-village" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
               {% elif e.camp == "loup_garou" or e.camp == "loup" %}
                 <span class="badge-camp badge-camp-loup" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
+              {% elif e.camp == "couple"%}
+                <span class="badge-camp badge-camp-loup" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
               {% else %}
-                <span class="badge-camp badge-camp-solo" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
+                <span class="badge-camp badge-camp-couple" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
               {% endif %}
               {% if e.infected %}<span class="badge-plain">Infecté</span>{% endif %}
               {% if e.rating is not None %}<span class="badge-plain">Note {{ e.rating }}/10</span>{% endif %}
