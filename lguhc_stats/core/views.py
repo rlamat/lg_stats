@@ -96,3 +96,10 @@ def profile(request, username):
         "infected_count": infected_count,
         "infected_rate": infected_rate,
     })
+
+
+from django.contrib.auth.models import User
+
+def players_list(request):
+    users = User.objects.order_by('username').values('username')
+    return render(request, "core/players.html", {"users": users})

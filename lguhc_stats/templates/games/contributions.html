@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2 class="text-white">Contributions</h2>
+  <div class="card shadow-sm mt-3">
+    <div class="card-body">
+      <table class="table table-dark table-striped table-hover mb-0">
+        <thead>
+          <tr><th>#</th><th>Joueur</th><th>Parties enregistrées</th></tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td class="align-middle">
+                <a href="{% url 'profile' r.user__username %}" class="d-inline-flex align-items-center gap-2 text-decoration-none">
+                  <img src="https://mc-heads.net/avatar/{{ r.user__username }}/32" alt="{{ r.user__username }}" width="24" height="24" class="rounded shadow-sm" loading="lazy">
+                  <span>{{ r.user__username }}</span>
+                </a>
+              </td>              
+              <td>{{ r.nb }}</td>
+            </tr>
+          {% empty %}
+            <tr><td colspan="3" class="text-muted">—</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

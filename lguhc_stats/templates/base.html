@@ -25,9 +25,11 @@
               <li class="nav-item"><a class="nav-link" href="{% url 'add_entry' %}">Ajouter une partie</a></li>
             {% endif %}
             <li class="nav-item"><a class="nav-link" href="{% url 'recent_entries' %}">Récents</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'leaderboards' %}">Classements</a></li>
+            <li class="nav-item">{% if user.is_staff %}<a class="nav-link" href="{% url 'leaderboards' %}">Classements</a>{% endif %}</li>
             <li class="nav-item"><a class="nav-link" href="{% url 'global_stats' %}">Stats</a></li>
-          </ul>
+            <li class="nav-item"><a class="nav-link" href="{% url 'contributions' %}">Contributions</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'players' %}">Joueurs</a></li>
+    </ul>
           <ul class="navbar-nav ms-auto">
             {% if user.is_authenticated %}
               <li class="nav-item d-flex align-items-center ms-2">

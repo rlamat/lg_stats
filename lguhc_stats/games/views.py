@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count, Max
@@ -25,6 +25,8 @@ def recent(request):
     entries = GameEntry.objects.select_related("user").order_by("-played_at")[:50]
     return render(request, "games/recent.html", {"entries": entries})
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def leaderboards(request):
     # Utilise uniquement les parties validées si le champ existe,
     # sinon retombe sur toutes les parties (compatibilité).
@@ -168,3 +170,13 @@ def edit_entry(request, pk):
 
     return render(request, "games/edit_entry.html", {"form": form, "entry": entry})
 
+
+
+from django.db.models import Count
+
+def contributions(request):
+    rows = (GameEntry.objects
+            .values('user__username')
+            .annotate(nb=Count('id'))
+            .order_by('-nb', 'user__username'))
+    return render(request, "games/contributions.html", {"rows": rows})

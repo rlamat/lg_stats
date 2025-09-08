@@ -1,15 +1,59 @@
 {% extends 'base.html' %}
 {% block content %}
-  <h2 class="text-white">Parties récentes</h2>
-  <div class="list-group mt-3 text-white">
+<h2 class="text-white">Parties récentes</h2>
+
+<div class="row g-3 mt-3">
   {% for e in entries %}
-    <div class="list-group-item list-group-item-action text-white">
-      <strong><a href="{% url 'profile' e.user.username %}">{{ e.user.username }}</a></strong>
-      — {{ e.played_at|date:"d/m/Y H:i" }} — {{ e.role }} — Kills: {{ e.kills }}
-      — {% if e.won %}<span class="text-success">Victoire</span>{% else %}<span class="text-danger">Défaite</span>{% endif %}
+    <div class="col-12 col-sm-6 col-lg-4">
+      <div class="card recent-card h-100">
+        <div class="card-body d-flex gap-3">
+          <img
+            src="https://mc-heads.net/avatar/{{ e.user.username }}/64"
+            alt="{{ e.user.username }}" width="48" height="48"
+            class="rounded shadow-sm flex-shrink-0" loading="lazy"
+          >
+          <div class="w-100 overflow-hidden">
+            <div class="d-flex justify-content-between align-items-start">
+              <a class="text-decoration-none truncate-1" style="max-width: 60%" href="{% url 'profile' e.user.username %}">
+                <strong class="text-white">{{ e.user.username }}</strong>
+              </a>
+              <small class="text-muted truncate-1" style="max-width: 38%">{{ e.played_at|date:"d/m/Y H:i" }}</small>
+            </div>
+
+            <!-- Badges rôle / camp -->
+            <div class="mt-1 d-flex flex-wrap gap-2">
+              <span class="badge-role" title="{{ e.get_role_display }}">{{ e.get_role_display }}</span>
+              {% if e.camp == "village" %}
+                <span class="badge-camp badge-camp-village" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
+              {% elif e.camp == "loup_garou" or e.camp == "loup" %}
+                <span class="badge-camp badge-camp-loup" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
+              {% else %}
+                <span class="badge-camp badge-camp-solo" title="{{ e.get_camp_display }}">{{ e.get_camp_display }}</span>
+              {% endif %}
+              {% if e.infected %}<span class="badge-plain">Infecté</span>{% endif %}
+              {% if e.rating is not None %}<span class="badge-plain">Note {{ e.rating }}/10</span>{% endif %}
+            </div>
+
+            <!-- Résumé -->
+            <div class="mt-2 small text-white-50 word-break">
+              Kills : <strong class="text-white">{{ e.kills }}</strong> —
+              {% if e.won %}<span class="badge bg-success">Victoire</span>{% else %}<span class="badge bg-danger">Défaite</span>{% endif %}
+              {% if e.killed_players %}
+                <span class="ms-2 truncate-1 d-inline-block" style="max-width: 100%" title="{{ e.killed_players }}">
+                  Joueurs tués : {{ e.killed_players }}
+                </span>
+              {% endif %}
+            </div>
+
+            {% if e.notes %}
+              <div class="mt-2 small clamp-2 text-white-50" title="{{ e.notes }}">{{ e.notes }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
   {% empty %}
     <div class="text-muted">Aucune partie.</div>
   {% endfor %}
-  </div>
+</div>
 {% endblock %}

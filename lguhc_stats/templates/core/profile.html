@@ -134,8 +134,8 @@
       {% for e in entries %}
         <tr>
           <td class="text-white">{{ e.played_at|date:"d/m/Y H:i" }}</td>
-          <td class="text-white">{{ e.role }}</td>
-          <td class="text-white">{{ e.camp }}</td>
+          <td class="text-white">{{ e.get_role_display }}</td>
+          <td class="text-white">{{ e.get_camp_display }}</td>
           <td class="text-white">{{ e.kills }}</td>
           <td>
             {% if e.won %}

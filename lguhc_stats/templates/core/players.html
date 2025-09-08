@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h2 class="text-white">Joueurs</h2>
+
+  <div class="my-3">
+    <input id="playerSearch" class="form-control" type="text" placeholder="Rechercher un joueur...">
+  </div>
+
+  <div id="playersGrid" class="row g-3">
+    {% for u in users %}
+      <div class="col-6 col-sm-4 col-md-3 col-lg-2 player-card" data-name="{{ u.username|lower }}">
+        <a href="{% url 'profile' u.username %}" class="text-decoration-none">
+          <div class="card shadow-sm h-100 text-center p-2">
+            <img src="https://mc-heads.net/avatar/{{ u.username }}/64" alt="{{ u.username }}" class="mx-auto mb-2" width="64" height="64" loading="lazy">
+            <div class="text-white small">{{ u.username }}</div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <div class="text-muted">Aucun joueur.</div>
+    {% endfor %}
+  </div>
+
+  <script>
+  (function(){
+    const input = document.getElementById('playerSearch');
+    const grid  = document.getElementById('playersGrid');
+    if (!input || !grid) return;
+    const cards = Array.from(grid.getElementsByClassName('player-card'));
+    function filter() {
+      const q = input.value.toLowerCase();
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name');
+        card.style.display = name.includes(q) ? '' : 'none';
+      });
+    }
+    input.addEventListener('input', filter);
+  })();
+  </script>
+{% endblock %}
