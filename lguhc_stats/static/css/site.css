@@ -144,3 +144,52 @@ a, .nav-link, .navbar-brand { color: #e5e7eb !important; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* === Pagination sombre (cohérente avec le thème du site) === */
+.pagination.pagination-dark {
+  display: flex;
+  gap: .375rem;                 /* espace entre les boutons */
+  flex-wrap: wrap;
+}
+
+.pagination.pagination-dark .page-link {
+  background-color: #0f172a;    /* fond sombre */
+  border: 1px solid #1f2937;    /* contour slate */
+  color: #e5e7eb;               /* texte gris clair */
+  min-width: 2.25rem;           /* largeur mini homogène */
+  text-align: center;
+  border-radius: .5rem;
+  line-height: 1.1;
+  padding: .35rem .6rem;
+  transition: background-color .15s ease, color .15s ease,
+              border-color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+
+.pagination.pagination-dark .page-link:hover {
+  background-color: #111827;
+  border-color: #374151;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.pagination.pagination-dark .page-item.active .page-link {
+  background-image: linear-gradient(180deg, #2563eb, #1d4ed8); /* bleu accent */
+  border-color: #1e40af;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(37,99,235,.35);
+}
+
+.pagination.pagination-dark .page-item.disabled .page-link {
+  background-color: #0f172a;
+  border-color: #1f2937;
+  color: #6b7280;
+  opacity: .65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.pagination.pagination-dark .page-link:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37,99,235,.35);
+}
