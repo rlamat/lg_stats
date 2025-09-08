@@ -6,6 +6,7 @@ from django.db.models import Sum, Count, Max
 from .forms import GameEntryForm
 from .models import GameEntry
 from django.http import HttpResponseForbidden
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def add_entry(request):
@@ -22,8 +23,28 @@ def add_entry(request):
     return render(request, "games/add_entry.html", {"form": form})
 
 def recent(request):
-    entries = GameEntry.objects.select_related("user").order_by("-played_at")[:50]
-    return render(request, "games/recent.html", {"entries": entries})
+    # Récupère les parties les plus récentes (optimisé pour éviter N+1)
+    qs = (GameEntry.objects
+          .select_related("user")
+          .order_by("-played_at"))
+
+    # 💡 Si tu veux ne montrer que les parties validées, décommente la ligne suivante :
+    # qs = qs.filter(verification_status="approved")
+
+    paginator = Paginator(qs, 12)  # 12 cartes par page
+    page = request.GET.get("page", 1)
+    try:
+        entries = paginator.page(page)
+    except PageNotAnInteger:
+        entries = paginator.page(1)
+    except EmptyPage:
+        entries = paginator.page(paginator.num_pages)
+
+    return render(request, "games/recent.html", {
+        "entries": entries,          # objet Page
+        "page_obj": entries,         # alias Django conventionnel
+        "is_paginated": entries.has_other_pages(),
+    })
 
 @login_required
 @user_passes_test(lambda u: u.is_staff)

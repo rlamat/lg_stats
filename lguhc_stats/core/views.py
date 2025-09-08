@@ -12,7 +12,7 @@ def home(request):
     total_entries = GameEntry.objects.count()
     total_kills = GameEntry.objects.aggregate(k=Sum("kills"))["k"] or 0
     total_players = User.objects.count()
-    recent_entries = GameEntry.objects.select_related("user").order_by("-played_at")[:10]
+    recent_entries = GameEntry.objects.select_related("user").order_by("-played_at")[:9]
     return render(request, "core/home.html", {
         "total_entries": total_entries,
         "total_kills": total_kills,
