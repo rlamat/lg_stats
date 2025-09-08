@@ -6,6 +6,8 @@ from .forms import SignUpForm
 from games.models import GameEntry
 from django.db.models import Sum, Count, Max
 from games.models import GameEntry, Role, Camp
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.utils.http import urlencode
 
 def home(request):
     # Simple dashboard / landing with some aggregate stats
@@ -98,8 +100,27 @@ def profile(request, username):
     })
 
 
-from django.contrib.auth.models import User
-
 def players_list(request):
-    users = User.objects.order_by('username').values('username')
-    return render(request, "core/players.html", {"users": users})
+    q = (request.GET.get("q") or "").strip()
+
+    qs = User.objects.all().order_by("username")
+    if q:
+        qs = qs.filter(username__icontains=q)
+
+    paginator = Paginator(qs, 18)  # 18 joueurs par page
+    page_number = request.GET.get("page") or 1
+    try:
+        page_obj = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage):
+        page_obj = paginator.page(1)
+
+    # Prépare un préfixe d’URL pour la pagination qui préserve la recherche
+    qs_str = urlencode({"q": q}) if q else ""
+    prefix = f"?{qs_str}&page=" if qs_str else "?page="
+
+    return render(request, "core/players.html", {
+        "page_obj": page_obj,
+        "is_paginated": page_obj.has_other_pages(),
+        "q": q,
+        "prefix": prefix,  # <-- on l’utilise dans le template
+    })
