@@ -107,7 +107,7 @@ def players_list(request):
     if q:
         qs = qs.filter(username__icontains=q)
 
-    paginator = Paginator(qs, 18)  # 18 joueurs par page
+    paginator = Paginator(qs, 24)  # 18 joueurs par page
     page_number = request.GET.get("page") or 1
     try:
         page_obj = paginator.page(page_number)
